@@ -1,0 +1,28 @@
+body
+{
+    background-color: #1E1E1E;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.text-std
+{
+	font-size: 14px;
+}
+
+.bg-darker
+{
+	background-color: #1E1E1E;
+}
+
+.text-greyer
+{
+	color: #D2D2C8;
+}
+
+.history
+{	
+	position: relative;
+	height: calc(100vh - 5rem);
+	overflow-y: scroll;
+}

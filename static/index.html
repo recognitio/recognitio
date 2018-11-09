@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="Aaron Yeoh Cruz">
+
+	<title>hypertoss</title>
+
+	<!-- Bootstrapping CSS -->
+	<link href="styles/bootstrap.min.css" rel="stylesheet">
+	<link href="styles/hypertoss.css" rel="stylesheet">
+</head>
+
+<body>
+	<script src="scripts/jquery-3.3.1.slim.min.js" defer></script>
+	<script src="scripts/popper.min.js" defer></script>
+	<script src="scripts/bootstrap.min.js" defer></script>
+
+
+	<script src="scripts/hypertoss_site.js" defer></script>
+	<script src="scripts/hypertoss.js" defer></script>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-md-3">
+				<div class="card card-body mt-3">
+					<ul class="nav nav-pills flex-column">
+						<li class="nav-item">
+							<div class="input-group">
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+									<label class="custom-file-label text-std" for="inputGroupFile04">ontology: none</label>
+								</div>
+							</div>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-std" href="#">Powers</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-std" href="#">Tens</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link disabled text-std" href="#">Negs</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-md" id="main">
+				<div class="row">
+					<div class="col pt-3 pb-3 bg-darker">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text border-0 text-light text-std" id="mode"></span>
+							</div>
+							<input class="form-control border-0 bg-dark text-light text-std" id="textbar" placeholder="" autocomplete="off" type="text">
+							<div class="input-group-append dropdown">
+								<button class="btn btn-outline-primary bg-dark dropdown-toggle text-std" type="button" id="dropdownMenu2" data-toggle="dropdown"
+								aria-haspopup="true" aria-expanded="false">
+									actions
+								</button>
+								<div class="dropdown-menu bg-dark" aria-labelledby="dropdownMenu2">
+									<button class="dropdown-item bg-dark text-light text-std" type="button">
+										preferences
+										<span class="badge badge-light">P</span>
+									</button>
+									<button class="dropdown-item bg-dark text-light text-std" type="button">
+										chat
+										<span class="badge badge-light">Y</span>
+									</button>
+									<button class="dropdown-item bg-dark text-light text-std" type="button" id="dropdown-button-buzz">
+										buzz
+										<span class="badge badge-light">␣</span>
+									</button>
+									<button class="dropdown-item bg-dark text-light text-std" type="button">
+										next question
+										<span class="badge badge-light">N</span>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col history text-std text-greyer" id="question">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>

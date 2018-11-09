@@ -1,0 +1,11 @@
+[package]
+name = "hypertoss-site"
+version = "0.1.0"
+authors = ["hyperum <aaronhyperum@gmail.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+stdweb = "0.4.10"
