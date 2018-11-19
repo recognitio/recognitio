@@ -1,16 +1,13 @@
-test:
-	cargo-web start
-	cp target/wasm32-unknown-unknown/release/hypertoss_site.js static/scripts
-	cp target/wasm32-unknown-unknown/release/hypertoss_site.wasm static/scripts
-
 build:
-        cargo-web build
-        cp target/wasm32-unknown-unknown/release/hypertoss_site.js static/scripts                cp target/wasm32-unknown-unknown/release/hypertoss_site.wasm static/scripts
+	cargo-web build
 
-copy:
-	cp target/wasm32-unknown-unknown/release/hypertoss_site.js static/scripts
-	cp target/wasm32-unknown-unknown/release/hypertoss_site.wasm static/scripts
+copy: build
+	cp target/wasm32-unknown-unknown/release/hypertoss.js static/scripts
+	cp target/wasm32-unknown-unknown/release/hypertoss.wasm static/scripts
+
+test: copy
+	cargo-web start
 
 clean:
-	rm static/scripts/hypertoss_site.js
-	rm static/scripts/hypertoss_site.wasm	
+	rm static/scripts/hypertoss.js
+	rm static/scripts/hypertoss.wasm	
