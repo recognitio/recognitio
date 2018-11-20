@@ -2,12 +2,12 @@ build:
 	cargo-web build
 
 copy: build
-	cp target/wasm32-unknown-unknown/release/recognitio.js static/scripts
-	cp target/wasm32-unknown-unknown/release/recognitio.wasm static/scripts
+	cp target/wasm32-unknown-unknown/release/recognitio.js static
+	cp target/wasm32-unknown-unknown/release/recognitio.wasm static
 
 test: copy
 	cargo-web start
 
 clean:
-	rm static/scripts/recognitio.js
-	rm static/scripts/recognitio.wasm	
+	rm static/recognitio.js
+	rm static/recognitio.wasm	

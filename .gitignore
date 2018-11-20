@@ -1,5 +1,5 @@
 /target
 **/*.rs.bk
 Cargo.lock
-/static/scripts/recognitio.js
-/static/scripts/recognitio.wasm
+/static/recognitio.js
+/static/recognitio.wasm
