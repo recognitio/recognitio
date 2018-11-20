@@ -11,12 +11,16 @@ use ascii::*;
 
 extern crate rand;
 use rand::*;
+use rand::seq::SliceRandom;
 
 use stdweb::js_export;
 
 extern crate ontologica;
 
 use ontologica::Ontology;
+
+use std::collections::HashSet;
+use std::iter::FromIterator;
 
 #[derive(Serialize, Deserialize)]
 struct Question //TODO: using the terminology already established for QANTA, struct Question: sequence: String, response: String
@@ -26,6 +30,17 @@ struct Question //TODO: using the terminology already established for QANTA, str
 }
 js_serializable!(Question);
 js_deserializable!(Question);
+
+struct RelativeOntology
+{
+	vertices: HashSet::<String>,
+	hypernyms: Vec<String>,
+	hyponyms: Vec<String>,
+	holonyms: Vec<String>,
+	meronyms: Vec<String>,
+	types: Vec<String>,
+	tokens: Vec<String>,
+}
 
 macro_rules! astring
 {
@@ -49,16 +64,35 @@ macro_rules! achar
 	};
 }
 
-pub fn imperative(supernym: AsciiString) -> AsciiString
+fn cascaded_clue(rel: &mut RelativeOntology, clues: Vec<&Fn(&mut RelativeOntology) -> Option<AsciiString>>) -> Option<AsciiString>
 {
-	let mut clause = astring!(if rand::random() {"name this "} else {"identify this "});
+	for clue in clues
+	{
+		match (*clue)(rel)
+		{
+			Some(phrase) => return Some(phrase),
+			None => continue,
+		}
+	}
 
-	clause.push_str(supernym.as_ascii_str().unwrap());
+	None
+}
+
+fn imperative(hypernym: AsciiString) -> AsciiString
+{
+	let mut clause = AsciiString::new();
+	let mut rng = thread_rng();
+	
+	clause.push_str(&astring!(["name this ", "identify this "].choose(&mut rng).unwrap().clone()));
+
+	clause.push_str(&astring!(["type of ", "kind of "].choose(&mut rng).unwrap().clone()));
+
+	clause.push_str(hypernym.as_ascii_str().unwrap());
 
 	clause
 }
 
-pub fn extensive_relative(hyponyms: &mut impl Iterator<Item = String>) -> AsciiString
+fn extensive_relative(rel: &mut RelativeOntology) -> AsciiString
 {
 	fn any_extension(examples: &AsciiString) -> AsciiString
 	{
@@ -79,9 +113,9 @@ pub fn extensive_relative(hyponyms: &mut impl Iterator<Item = String>) -> AsciiS
 	let mut max_examples: usize = thread_rng().gen_range(1, 4);
 	let mut examples = Vec::new();
 
-	while examples.len() <= max_examples
+	while examples.len() < max_examples
 	{
-		match hyponyms.next()
+		match rel.hyponyms.pop()
 		{
 			Some(hyponym) => examples.push(hyponym),
 			None => break,
@@ -132,11 +166,11 @@ fn nonterminal_sentence(_ontology: &Ontology) -> AsciiString
 	astring!("")
 }
 
-fn terminal_sentence(hypernyms: &mut impl Iterator<Item = String>, hyponyms: &mut impl Iterator<Item = String>) -> AsciiString
+fn terminal_sentence(rel: &mut RelativeOntology) -> AsciiString
 {
-	let mut sentence = imperative(AsciiString::from_ascii(hypernyms.next().unwrap_or("entity".to_string()).clone()).unwrap()); //unsafe
+	let mut sentence = imperative(AsciiString::from_ascii(rel.hypernyms.pop().unwrap_or("entity".to_string()).clone()).unwrap()); //unsafe
 
-	sentence.push_str(&extensive_relative(hyponyms));
+	sentence.push_str(&extensive_relative(rel));
 
 
 //TODO
@@ -149,22 +183,36 @@ fn terminal_sentence(hypernyms: &mut impl Iterator<Item = String>, hyponyms: &mu
 
 #[js_export]
 fn generate_question(ontology_source: String) -> Question
-{
+{	
+	let mut rng = thread_rng();
 	let ontology: Ontology = serde_json::from_str(&ontology_source).unwrap_or(Ontology::new());
 
 	let mut question = AsciiString::new();
 
-	let mut vertices = ontology.vertex_labels();
+	let mut vertices = HashSet::<String>::from_iter(ontology.vertex_labels().into_iter());
 
-	let concept = vertices[thread_rng().gen_range(0, vertices.len())].clone();//
+	let concept = ontology.vertex_labels().choose(&mut rng).unwrap().clone();
 
-	let _hypernyms = ontology.hypernyms(&concept);
-	let mut hypernyms = _hypernyms.iter().map(|s| s.clone());
+	let mut rel = 
+	RelativeOntology
+	{
+		vertices: HashSet::from_iter(ontology.vertex_labels().into_iter()),
+		hypernyms: ontology.hypernyms(&concept),
+		hyponyms: ontology.hyponyms(&concept),
+		holonyms: ontology.holonyms(&concept),
+		meronyms: ontology.meronyms(&concept),
+		types: ontology.types(&concept),
+		tokens: ontology.tokens(&concept),
+	};
 
-	let _hyponyms = ontology.hyponyms(&concept);
-	let mut hyponyms = _hyponyms.iter().map(|s| s.clone());
+	rel.hypernyms.as_mut_slice().shuffle(&mut rng);
+	rel.hyponyms.as_mut_slice().shuffle(&mut rng);
+	rel.holonyms.as_mut_slice().shuffle(&mut rng);
+	rel.meronyms.as_mut_slice().shuffle(&mut rng);
+	rel.types.as_mut_slice().shuffle(&mut rng);
+	rel.tokens.as_mut_slice().shuffle(&mut rng);
 
-	question.push_str(&terminal_sentence(&mut hypernyms, &mut hyponyms));
+	question.push_str(&terminal_sentence(&mut rel));
 
 	Question {challenge: question.as_str().to_string(), response: concept}
 }

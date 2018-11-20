@@ -1,5 +1,5 @@
 /target
 **/*.rs.bk
 Cargo.lock
-/static/scripts/hypertoss.js
-/static/scripts/hypertoss.wasm
+/static/scripts/recognitio.js
+/static/scripts/recognitio.wasm
